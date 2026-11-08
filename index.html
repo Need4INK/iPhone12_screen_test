@@ -19,8 +19,8 @@
     --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
     /* layout knobs */
     --banner:64px;      /* banner height below the status bar */
-    --barh:56px;        /* bottom menu bar height */
-    --barGap:10px;      /* space kept under the bar (home-bar area) */
+    --barh:36px;        /* bottom menu bar height */
+    --barGap:30px;      /* space kept under the bar (home-bar area) */
   }
   *{box-sizing:border-box;margin:0;padding:0}
   /* full-screen method: page height = 100vh, everything in page flow */
@@ -69,7 +69,7 @@
   #info td:last-child{text-align:right}
   .ok{color:var(--grn)} .bad{color:var(--red)} .dim{color:#9a8fb0}
   .sw{display:inline-block;width:10px;height:10px;margin-right:6px;border:2px dashed}
-  .demo{display:block;margin:10px auto 0;width:max-content;padding:8px 12px;font:10px 'Press Start 2P',monospace;color:#07030f;background:var(--grn);border-radius:6px;text-decoration:none;box-shadow:0 0 10px var(--grn)}
+  .demo{display:block;margin:8px auto 0;width:max-content;padding:8px 12px;font:10px 'Press Start 2P',monospace;color:#07030f;background:var(--grn);border-radius:6px;text-decoration:none;box-shadow:0 0 10px var(--grn)}
   #hint{margin-top:6px;font-size:16px;color:#9a8fb0;text-align:center}
   body.hide #info{visibility:hidden}
   #probe{position:absolute;visibility:hidden;padding:var(--sat) 0 var(--sab) 0}
@@ -85,6 +85,9 @@
         <table id="tbl"></table>
         <a class="demo" href="knucklebones.html">▶ KNUCKLEBONES</a>
         <a class="demo" href="othello.html" style="background:var(--mag);box-shadow:0 0 10px var(--mag)">▶ OTHELLO</a>
+        <a class="demo" href="water_sort.html" style="background:var(--cyan);box-shadow:0 0 10px var(--cyan)">▶ WATER SORT</a>
+        <a class="demo" href="sudoku.html" style="background:var(--org);box-shadow:0 0 10px var(--org)">▶ SUDOKU</a>
+        <a class="demo" href="remi.html" style="background:var(--red);box-shadow:0 0 10px var(--red)">▶ REMI</a>
         <div id="hint">Tap to hide/show this panel</div>
       </div>
     </div>

@@ -84,3 +84,19 @@ make('Knucklebones.html', 'knucklebones.html', '.ttl1', '.ctl',
 make('Othello.html', 'othello.html', '#t1', '.ctl',
      'id="bRules" aria-expanded="false">Rules</button>',
      extra='body:not(.flip) .mid:not(#msg2){margin-bottom:0!important}html:not(.rotated) h1{font-size:20px!important;margin:0!important}')
+
+make('Water_Sort.html', 'water_sort.html', 'h1', '#game',
+     'id="bRules" aria-expanded="false">Rules</button>',
+     reps=[("var h=rot?W:H;de.classList.toggle('short',h<=600);de.classList.toggle('tiny',h<=440);layout()}",
+            "de.classList.remove('rot','r270','short','tiny');layout()}"),
+           ("parseFloat(hs.fontSize)+parseFloat(hs.marginTop)","h.offsetHeight+parseFloat(hs.marginTop)")])
+
+make('Sudoku.html', 'sudoku.html', '#t1', '#mid',
+     'id="bRules" aria-expanded="false">Rules</button>',
+     extra='html:not(.rotated) h1{margin:0!important}')
+
+make('Remi.html', 'remi.html', 'h1', '#game',
+     'id="bRules" aria-expanded="false">Rules</button>',
+     reps=[("const h=rot?W:H;de.classList.toggle('short',h<=640);de.classList.toggle('tiny',h<=520);layout()}",
+            "de.classList.remove('rot','r270','short','tiny');layout()}"),
+           ("parseFloat(hs.fontSize)+parseFloat(hs.marginTop)","h.offsetHeight+parseFloat(hs.marginTop)")])
