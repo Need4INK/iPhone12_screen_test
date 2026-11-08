@@ -21,7 +21,12 @@
   html,body{height:100%;background:var(--bg);color:#fff;overflow:hidden;
     font:14px/1.35 ui-monospace,Menlo,monospace;-webkit-user-select:none;user-select:none;
     -webkit-tap-highlight-color:transparent}
-  .fix{position:fixed;pointer-events:none}
+  .fix{position:absolute;pointer-events:none}
+  /* full-screen canvas: works around iOS standalone bug where the
+     viewport is short by safe-area-inset-top */
+  #screen{position:fixed;top:0;left:0;width:100%;
+    height:calc(100% + env(safe-area-inset-top));height:var(--H,calc(100% + env(safe-area-inset-top)));
+    overflow:hidden}
 
   /* screen edge with iPhone 12 corner radius (47.33pt) */
   #edge{inset:0;border:2px solid var(--cyan);border-radius:47.33px;
@@ -58,14 +63,14 @@
       repeating-linear-gradient(180deg,rgba(57,255,122,.6) 0 1px,transparent 1px 10px) 0 0/7px 100% no-repeat}
   #rB{bottom:0;transform:scaleY(-1)} #rT{top:0}
   #rL{left:0} #rR{right:0;transform:scaleX(-1)}
-  .lbl{position:fixed;font-size:9px;color:var(--grn);pointer-events:none}
+  .lbl{position:absolute;font-size:9px;color:var(--grn);pointer-events:none}
 
   /* centre markers */
   #cx{top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.12)}
   #cy{left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.12)}
 
   /* info panel inside safe area */
-  #info{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  #info{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:min(300px,82vw);padding:14px 16px;background:rgba(7,3,15,.88);
     border:2px solid var(--mag);border-radius:10px;box-shadow:0 0 14px var(--mag)}
   #info h1{font-size:15px;color:var(--yel);margin-bottom:8px;letter-spacing:1px}
@@ -81,6 +86,7 @@
 </style>
 </head>
 <body>
+<div id="screen">
 <div id="rect" class="fix"></div>
 <div id="sTop" class="fix"></div><div id="sBot" class="fix"></div>
 <div id="sL" class="fix"></div><div id="sR" class="fix"></div>
@@ -105,6 +111,7 @@
   </div>
   <div id="hint">Tap anywhere to hide/show this panel</div>
 </div>
+</div>
 
 <script>
 const EXP={w:390,h:844,top:47,bottom:34,dpr:3};
@@ -114,13 +121,22 @@ function row(name,val,good){
   const cls=good===undefined?'':(good?'ok':'bad');
   return `<tr><td class="dim">${name}</td><td class="${cls}">${val}</td></tr>`;
 }
+const scr=document.getElementById('screen');
+function fitScreen(){
+  const sa=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+  const portrait=innerHeight>=innerWidth;
+  const full=portrait?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
+  // standalone: use the real screen height; otherwise the visible viewport
+  document.documentElement.style.setProperty('--H',(sa?Math.max(full,innerHeight):innerHeight)+'px');
+}
 function labels(){
-  const w=innerWidth,h=innerHeight;let s='';
+  const w=scr.clientWidth,h=scr.clientHeight;let s='';
   for(let x=50;x<w;x+=50)s+=`<div class="lbl" style="left:${x+2}px;top:15px">${x}</div>`;
   for(let y=100;y<h;y+=100)s+=`<div class="lbl" style="left:16px;top:${y-5}px">${y}</div>`;
   document.getElementById('labels').innerHTML=s;
 }
 function update(){
+  fitScreen();
   const cs=getComputedStyle(probe);
   const t=px(cs.paddingTop),b=px(cs.paddingBottom),l=px(cs.paddingLeft),r=px(cs.paddingRight);
   const w=innerWidth,h=innerHeight;
@@ -129,13 +145,14 @@ function update(){
   document.getElementById('tbl').innerHTML=
     row('Home-screen app',sa?'yes':'no (Safari)',sa)+
     row('Orientation',portrait?'portrait':'landscape',portrait)+
-    row('Page size',`${w} × ${h}`,w===EXP.w&&h===EXP.h)+
+    row('Viewport (iOS)',`${w} × ${h}`)+
+    row('Canvas used',`${scr.clientWidth} × ${scr.clientHeight}`,scr.clientWidth===EXP.w&&scr.clientHeight===EXP.h)+
     row('Screen size',`${screen.width} × ${screen.height}`)+
     row('Pixel ratio',`${devicePixelRatio}×`)+
     row('Safe top',`${t}pt`,t===EXP.top)+
     row('Safe bottom',`${b}pt`,b===EXP.bottom)+
     row('Safe left / right',`${l} / ${r}pt`)+
-    row('Usable area',`${w-l-r} × ${h-t-b}`)+
+    row('Usable area',`${scr.clientWidth-l-r} × ${scr.clientHeight-t-b}`)+
     row('Expected',`${EXP.w}×${EXP.h}, ${EXP.top}/${EXP.bottom}`);
   labels();
 }
