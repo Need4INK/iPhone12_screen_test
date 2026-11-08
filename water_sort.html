@@ -119,6 +119,8 @@ body:not(.flip) .bar{position:relative!important;inset:auto!important;flex:none!
   display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important;align-content:end!important}
 body:not(.flip) .bar button{padding:22px 0 0!important}
 .bar #bRules{grid-column:1;justify-self:start}.bar .mnu{grid-column:2;justify-self:center;color:var(--yel)!important;text-shadow:0 0 6px var(--yel)!important}.bar #bSet{grid-column:3;justify-self:end}
+/* open Rules/Settings: magenta, so it never matches the yellow Menu */
+.bar button[aria-expanded="true"]{color:var(--mag)!important;text-shadow:0 0 8px var(--mag)!important}
 /* flipped 2-player template: banner 64 / game 603 / banner 64 / bar 36 / gap 30 */
 body.flip main{padding:var(--pt,0px) 14px calc(var(--barh) + var(--gap))!important;gap:8px!important;justify-content:flex-start!important}
 body.flip main>h1,body.flip main>.ttl2-none{flex:none!important;height:var(--banner)!important;max-height:none!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
