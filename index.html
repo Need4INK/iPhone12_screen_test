@@ -83,6 +83,16 @@
   #hint{margin-top:8px;font-size:11px;color:#9a8fb0;text-align:center}
   body.hide #info{display:none}
   #probe{position:fixed;visibility:hidden;padding:var(--sat) var(--sar) var(--sab) var(--sal)}
+
+  /* ---- fill methods (switch with the MODE button) ---- */
+  html.m1,html.m1 body{height:var(--H);overflow:visible}
+  html.m1 #screen{position:absolute;top:0;left:0;height:var(--H)}
+  html.m2,html.m2 body{height:100vh;overflow:visible}
+  html.m2 #screen{position:absolute;top:0;left:0;height:100vh}
+  html.m3 #screen{height:auto;bottom:calc(-1 * env(safe-area-inset-top))}
+  #mode{display:block;margin:10px auto 0;padding:6px 10px;font:inherit;font-size:13px;
+    color:var(--bg);background:var(--yel);border:0;border-radius:6px;pointer-events:auto}
+  .vh{position:absolute;visibility:hidden;width:1px}
 </style>
 </head>
 <body>
@@ -97,7 +107,7 @@
 <div id="home" class="fix"></div>
 <div id="edge" class="fix"></div>
 <div id="labels"></div>
-<div id="probe"></div>
+<div id="probe"></div><div class="vh" id="v1" style="height:100vh"></div><div class="vh" id="v2" style="height:100lvh"></div><div class="vh" id="v3" style="height:100dvh"></div>
 
 <div id="info">
   <h1>SCREEN TEST · iPhone 12</h1>
@@ -109,11 +119,15 @@
     <div><span style="background:var(--org)"></span>bottom safe area</div>
     <div><span style="background:var(--grn)"></span>ruler: 10pt ticks, 50pt marks</div>
   </div>
+  <button id="mode"></button>
   <div id="hint">Tap anywhere to hide/show this panel</div>
 </div>
 </div>
 
 <script>
+const MODES=['0 · fixed + JS height','1 · page height = screen','2 · page height = 100vh','3 · fixed, bottom −47'];
+let mode=0;try{mode=+localStorage.getItem('fillMode')||0}catch(e){}
+document.documentElement.classList.add('m'+mode);
 const EXP={w:390,h:844,top:47,bottom:34,dpr:3};
 const probe=document.getElementById('probe');
 function px(v){return Math.round(parseFloat(v)||0)}
@@ -153,11 +167,16 @@ function update(){
     row('Safe bottom',`${b}pt`,b===EXP.bottom)+
     row('Safe left / right',`${l} / ${r}pt`)+
     row('Usable area',`${scr.clientWidth-l-r} × ${scr.clientHeight-t-b}`)+
+    row('100vh / lvh / dvh',['v1','v2','v3'].map(i=>document.getElementById(i).offsetHeight).join(' / '))+
+    row('Body scroll height',document.documentElement.scrollHeight)+
     row('Expected',`${EXP.w}×${EXP.h}, ${EXP.top}/${EXP.bottom}`);
   labels();
 }
 addEventListener('resize',update);
 addEventListener('orientationchange',()=>setTimeout(update,300));
+document.getElementById('mode').textContent='MODE '+MODES[mode]+'  ▸';
+document.getElementById('mode').addEventListener('click',e=>{e.stopPropagation();
+  try{localStorage.setItem('fillMode',(mode+1)%MODES.length)}catch(_){}location.reload()});
 document.addEventListener('click',()=>document.body.classList.toggle('hide'));
 document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 update();setTimeout(update,500);
