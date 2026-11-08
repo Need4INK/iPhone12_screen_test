@@ -153,8 +153,8 @@ body{height:100vh!important;background:transparent!important}
 #app{position:absolute!important;left:0!important;top:0!important;width:390px!important;height:var(--sh,100vh)!important;transform-origin:0 0!important;transform:var(--st,none)!important;padding:0!important;margin:0!important;background:transparent!important}
 main{max-width:none!important;max-height:none!important;width:100%!important;height:100%!important;margin:0!important}
 body:not(.flip) main{padding:var(--pt,0px) 14px var(--gap)!important;justify-content:flex-start!important}
-body:not(.flip) main>.ttl1{flex:none!important;height:var(--banner)!important;max-height:none!important;margin:0!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
-body:not(.flip) main>.ctl{margin-top:auto!important}
+body:not(.flip) main>.ttl1{flex:none!important;height:var(--banner)!important;max-height:none!important;margin:0 0 auto!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
+/* game elements centred in the game area: free space split above (title margin) and below (bar margin) */
 body:not(.flip) .bar{position:relative!important;inset:auto!important;flex:none!important;height:var(--barh)!important;max-height:none!important;margin:auto 0 0!important;padding:0!important;width:100%!important;max-width:none!important;
   display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important;align-content:end!important}
 body:not(.flip) .bar button{padding:22px 0 0!important}
@@ -162,7 +162,7 @@ body:not(.flip) .bar button{padding:22px 0 0!important}
 /* flipped 2-player: same stage and bar position, its own layout */
 body.flip main{padding:calc(var(--pt,0px) + 10px) 14px calc(40px + var(--gap))!important}
 body.flip .bar{display:grid!important;grid-template-columns:1fr auto 1fr!important;padding:0 14px!important;bottom:var(--gap)!important;max-width:none!important}
-body:not(.flip) .side{max-height:none!important;flex-grow:8}body:not(.flip) .ctl{margin-bottom:8px!important}body.flip .side{max-height:none!important;flex-grow:1!important}
+body:not(.flip) .side{max-height:none!important;flex-grow:8}body:not(.flip) .ctl{margin:8px 0!important}body:not(.flip) .ctl[hidden]+.side.opp{margin-top:8px}body:not(.flip) .side.you{margin-bottom:8px}body.flip .side{max-height:none!important;flex-grow:1!important}
 /* guides: tap the title to show/hide */
 .gd{position:absolute;left:2px;right:2px;border:2px dashed;pointer-events:none;z-index:30;display:none}
 .gd span{position:absolute;right:4px;top:2px;font:400 16px/1 var(--vt)}
@@ -240,7 +240,7 @@ function addRec(k,i){var r=REC[k]||(REC[k]=[0,0,0]);r[i]++;try{localStorage.setI
 function recText(){return 'Won vs CPU: '+['easy','normal','hard'].map(function(d){var r=REC[d]||[0,0,0];return d[0].toUpperCase()+d.slice(1)+' '+r[0]+'/'+(r[0]+r[1]+r[2])}).join(' · ')}
 function renderDiff(){var el=document.getElementById('diff');el.innerHTML='';
 
-  if(mode==='2p'){var tg=document.createElement('span');tg.className='tag';tg.textContent='Pass & Play';el.appendChild(tg);return}
+  el.parentNode.hidden=(mode==='2p');if(mode==='2p')return;
   var lock=!over&&!!p&&!!c&&(p.some(function(a){return a.length})||c.some(function(a){return a.length}));
   ['easy','normal','hard'].forEach(function(d){var b=document.createElement('button');b.type='button';b.textContent=d[0].toUpperCase()+d.slice(1);
     b.setAttribute('aria-pressed',S.diff===d?'true':'false');

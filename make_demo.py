@@ -12,8 +12,8 @@ body{height:100vh!important;background:transparent!important}
 #app{position:absolute!important;left:0!important;top:0!important;width:390px!important;height:var(--sh,100vh)!important;transform-origin:0 0!important;transform:var(--st,none)!important;padding:0!important;margin:0!important;background:transparent!important}
 main{max-width:none!important;max-height:none!important;width:100%!important;height:100%!important;margin:0!important}
 body:not(.flip) main{padding:var(--pt,0px) 14px var(--gap)!important;justify-content:flex-start!important}
-body:not(.flip) main>TITLE{flex:none!important;height:var(--banner)!important;max-height:none!important;margin:0!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
-body:not(.flip) main>FIRST{margin-top:auto!important}
+body:not(.flip) main>TITLE{flex:none!important;height:var(--banner)!important;max-height:none!important;margin:0 0 auto!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
+/* game elements centred in the game area: free space split above (title margin) and below (bar margin) */
 body:not(.flip) .bar{position:relative!important;inset:auto!important;flex:none!important;height:var(--barh)!important;max-height:none!important;margin:auto 0 0!important;padding:0!important;width:100%!important;max-width:none!important;
   display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important;align-content:end!important}
 body:not(.flip) .bar button{padding:22px 0 0!important}
@@ -78,7 +78,7 @@ def make(src, out, title, first, menu_after, extra='', reps=()):
 
 make('Knucklebones.html', 'knucklebones.html', '.ttl1', '.ctl',
      'aria-controls="panel">Rules</button>',
-     extra='body:not(.flip) .side{max-height:none!important;flex-grow:8}body:not(.flip) .ctl{margin-bottom:8px!important}body.flip .side{max-height:none!important;flex-grow:1!important}',
+     extra='body:not(.flip) .side{max-height:none!important;flex-grow:8}body:not(.flip) .ctl{margin:8px 0!important}body:not(.flip) .ctl[hidden]+.side.opp{margin-top:8px}body:not(.flip) .side.you{margin-bottom:8px}body.flip .side{max-height:none!important;flex-grow:1!important}',
      reps=[('function fit(){var de', 'function fit(){return;var de')])
 
 make('Othello.html', 'othello.html', '#t1', '.ctl',
