@@ -146,15 +146,16 @@ body:not(.flip) .side{flex-grow:8;max-height:360px}
 </style>
 <style id="tpl">
 /* ===== 3-area template: banner / game area / menu bar ===== */
-:root{--banner:64px;--barh:56px;--gap:10px;padding:0!important}
+:root{--banner:64px;--barh:36px;--gap:30px;padding:0!important}
 html{height:100vh!important;overflow:hidden;background:linear-gradient(#07030f,rgba(7,3,15,0) 64px),radial-gradient(120% 55% at 50% 0%,rgba(255,43,214,.18),transparent 60%),radial-gradient(120% 45% at 50% 100%,rgba(25,243,255,.13),transparent 60%),#07030f!important}
 body{height:100vh!important;background:transparent!important}
 #app{position:absolute!important;left:0;top:0;width:390px!important;height:var(--sh,100vh)!important;transform-origin:0 0;transform:var(--st,none);padding:0!important}
 body:not(.flip) main{max-width:none!important;max-height:none!important;height:100%;margin:0!important;padding:var(--pt,0px) 14px var(--gap)!important;justify-content:flex-start!important}
 body:not(.flip) .ttl1{flex:none!important;height:var(--banner);max-height:none!important;margin:0!important;display:flex;align-items:center;justify-content:center}
-body:not(.flip) .ctl{margin:4px 0 8px}
+body:not(.flip) .ctl{margin:auto 0 8px}
 body:not(.flip) .side{max-height:none!important;flex-grow:8}
-body:not(.flip) .bar{flex:none!important;height:var(--barh);max-height:none!important;margin-top:auto;padding:0!important;align-items:center!important;align-content:center!important}
+body:not(.flip) .bar{flex:none!important;height:var(--barh);max-height:none!important;margin-top:auto;padding:0!important;align-items:end!important;align-content:end!important}
+body:not(.flip) .bar button{padding:22px 0 0!important}
 #bar .mnu{grid-column:2;justify-self:center;color:var(--yel);text-shadow:0 0 6px var(--yel)}
 /* flipped 2-player: same stage, own layout */
 body.flip main{width:100%!important;max-width:none!important;padding:calc(var(--pt,0px) + 10px) 14px var(--gap)!important}
