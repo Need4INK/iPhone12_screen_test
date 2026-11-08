@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Screen Test">
+<meta name="theme-color" content="#07030f">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Screen Test</title>
+<style>
+  :root{
+    --bg:#07030f; --mag:#ff2bd6; --cyan:#19f3ff; --yel:#ffe94d;
+    --grn:#39ff7a; --org:#ff9e2c; --red:#e8566a;
+    --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
+    --sal:env(safe-area-inset-left); --sar:env(safe-area-inset-right);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:#fff;overflow:hidden;
+    font:14px/1.35 ui-monospace,Menlo,monospace;-webkit-user-select:none;user-select:none;
+    -webkit-tap-highlight-color:transparent}
+  .fix{position:fixed;pointer-events:none}
+
+  /* screen edge with iPhone 12 corner radius (47.33pt) */
+  #edge{inset:0;border:2px solid var(--cyan);border-radius:47.33px;
+    box-shadow:inset 0 0 12px var(--cyan)}
+  /* plain rectangle of the viewport, to compare with rounded corners */
+  #rect{inset:0;border:1px dashed rgba(25,243,255,.45)}
+
+  /* safe-area bands */
+  #sTop{top:0;left:0;right:0;height:var(--sat);
+    background:repeating-linear-gradient(45deg,rgba(255,233,77,.28) 0 6px,transparent 6px 12px);
+    border-bottom:1px solid var(--yel)}
+  #sBot{bottom:0;left:0;right:0;height:var(--sab);
+    background:repeating-linear-gradient(45deg,rgba(255,158,44,.3) 0 6px,transparent 6px 12px);
+    border-top:1px solid var(--org)}
+  #sL{top:0;bottom:0;left:0;width:var(--sal);background:rgba(232,86,106,.3)}
+  #sR{top:0;bottom:0;right:0;width:var(--sar);background:rgba(232,86,106,.3)}
+
+  /* approximate iPhone 12 notch: ~210 x 30 pt */
+  #notch{top:0;left:50%;width:210px;height:30px;transform:translateX(-50%);
+    background:rgba(255,43,214,.35);border:2px solid var(--mag);border-top:none;
+    border-radius:0 0 22px 22px;box-shadow:0 0 10px var(--mag)}
+  /* home indicator: ~134 x 5 pt, 8pt from bottom */
+  #home{bottom:8px;left:50%;width:134px;height:5px;transform:translateX(-50%);
+    background:var(--mag);border-radius:3px;box-shadow:0 0 8px var(--mag)}
+
+  /* rulers (tick every 10, longer every 50) */
+  .rx{left:0;right:0;height:14px;
+    background:
+      repeating-linear-gradient(90deg,var(--grn) 0 1px,transparent 1px 50px) 0 0/100% 14px no-repeat,
+      repeating-linear-gradient(90deg,rgba(57,255,122,.6) 0 1px,transparent 1px 10px) 0 0/100% 7px no-repeat}
+  .ry{top:0;bottom:0;width:14px;
+    background:
+      repeating-linear-gradient(180deg,var(--grn) 0 1px,transparent 1px 50px) 0 0/14px 100% no-repeat,
+      repeating-linear-gradient(180deg,rgba(57,255,122,.6) 0 1px,transparent 1px 10px) 0 0/7px 100% no-repeat}
+  #rB{bottom:0;transform:scaleY(-1)} #rT{top:0}
+  #rL{left:0} #rR{right:0;transform:scaleX(-1)}
+  .lbl{position:fixed;font-size:9px;color:var(--grn);pointer-events:none}
+
+  /* centre markers */
+  #cx{top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.12)}
+  #cy{left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.12)}
+
+  /* info panel inside safe area */
+  #info{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(300px,82vw);padding:14px 16px;background:rgba(7,3,15,.88);
+    border:2px solid var(--mag);border-radius:10px;box-shadow:0 0 14px var(--mag)}
+  #info h1{font-size:15px;color:var(--yel);margin-bottom:8px;letter-spacing:1px}
+  #info table{width:100%;border-collapse:collapse}
+  #info td{padding:2px 0;vertical-align:top}
+  #info td:last-child{text-align:right}
+  .ok{color:var(--grn)} .bad{color:var(--red)} .dim{color:#9a8fb0}
+  #legend{margin-top:10px;font-size:12px}
+  #legend span{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
+  #hint{margin-top:8px;font-size:11px;color:#9a8fb0;text-align:center}
+  body.hide #info{display:none}
+  #probe{position:fixed;visibility:hidden;padding:var(--sat) var(--sar) var(--sab) var(--sal)}
+</style>
+</head>
+<body>
+<div id="rect" class="fix"></div>
+<div id="sTop" class="fix"></div><div id="sBot" class="fix"></div>
+<div id="sL" class="fix"></div><div id="sR" class="fix"></div>
+<div id="cx" class="fix"></div><div id="cy" class="fix"></div>
+<div id="rT" class="fix rx"></div><div id="rB" class="fix rx"></div>
+<div id="rL" class="fix ry"></div><div id="rR" class="fix ry"></div>
+<div id="notch" class="fix"></div>
+<div id="home" class="fix"></div>
+<div id="edge" class="fix"></div>
+<div id="labels"></div>
+<div id="probe"></div>
+
+<div id="info">
+  <h1>SCREEN TEST · iPhone 12</h1>
+  <table id="tbl"></table>
+  <div id="legend">
+    <div><span style="background:var(--cyan)"></span>screen edge (47pt corners)</div>
+    <div><span style="background:var(--mag)"></span>notch &amp; home bar (approx.)</div>
+    <div><span style="background:var(--yel)"></span>top safe area</div>
+    <div><span style="background:var(--org)"></span>bottom safe area</div>
+    <div><span style="background:var(--grn)"></span>ruler: 10pt ticks, 50pt marks</div>
+  </div>
+  <div id="hint">Tap anywhere to hide/show this panel</div>
+</div>
+
+<script>
+const EXP={w:390,h:844,top:47,bottom:34,dpr:3};
+const probe=document.getElementById('probe');
+function px(v){return Math.round(parseFloat(v)||0)}
+function row(name,val,good){
+  const cls=good===undefined?'':(good?'ok':'bad');
+  return `<tr><td class="dim">${name}</td><td class="${cls}">${val}</td></tr>`;
+}
+function labels(){
+  const w=innerWidth,h=innerHeight;let s='';
+  for(let x=50;x<w;x+=50)s+=`<div class="lbl" style="left:${x+2}px;top:15px">${x}</div>`;
+  for(let y=100;y<h;y+=100)s+=`<div class="lbl" style="left:16px;top:${y-5}px">${y}</div>`;
+  document.getElementById('labels').innerHTML=s;
+}
+function update(){
+  const cs=getComputedStyle(probe);
+  const t=px(cs.paddingTop),b=px(cs.paddingBottom),l=px(cs.paddingLeft),r=px(cs.paddingRight);
+  const w=innerWidth,h=innerHeight;
+  const sa=window.navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+  const portrait=h>=w;
+  document.getElementById('tbl').innerHTML=
+    row('Home-screen app',sa?'yes':'no (Safari)',sa)+
+    row('Orientation',portrait?'portrait':'landscape',portrait)+
+    row('Page size',`${w} × ${h}`,w===EXP.w&&h===EXP.h)+
+    row('Screen size',`${screen.width} × ${screen.height}`)+
+    row('Pixel ratio',`${devicePixelRatio}×`)+
+    row('Safe top',`${t}pt`,t===EXP.top)+
+    row('Safe bottom',`${b}pt`,b===EXP.bottom)+
+    row('Safe left / right',`${l} / ${r}pt`)+
+    row('Usable area',`${w-l-r} × ${h-t-b}`)+
+    row('Expected',`${EXP.w}×${EXP.h}, ${EXP.top}/${EXP.bottom}`);
+  labels();
+}
+addEventListener('resize',update);
+addEventListener('orientationchange',()=>setTimeout(update,300));
+document.addEventListener('click',()=>document.body.classList.toggle('hide'));
+document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+update();setTimeout(update,500);
+</script>
+</body>
+</html>
