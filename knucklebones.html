@@ -10,6 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Screen Test">
+
 <meta property="og:title" content="Knucklebones">
 <meta property="og:description" content="A neon arcade dice duel. Play against the CPU or a friend on one phone.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%B2%3C/text%3E%3C/svg%3E">
@@ -145,30 +146,28 @@ body:not(.flip) .bar{flex:1 1 auto;max-height:none}
 body:not(.flip) .side{flex-grow:8;max-height:360px}
 </style>
 <style id="tpl">
-/* ===== 3-area template: banner / game area / menu bar ===== */
-:root{--banner:64px;--barh:36px;--gap:30px;padding:0!important}
+/* ===== 3-area template (iPhone 12 reference): banner 64 / game 667 / bar 36 / gap 30 ===== */
+:root{--banner:64px;--game:667px;--barh:36px;--gap:30px;padding:0!important}
 html{height:100vh!important;overflow:hidden;background:linear-gradient(#07030f,rgba(7,3,15,0) 64px),radial-gradient(120% 55% at 50% 0%,rgba(255,43,214,.18),transparent 60%),radial-gradient(120% 45% at 50% 100%,rgba(25,243,255,.13),transparent 60%),#07030f!important}
 body{height:100vh!important;background:transparent!important}
-#app{position:absolute!important;left:0;top:0;width:390px!important;height:var(--sh,100vh)!important;transform-origin:0 0;transform:var(--st,none);padding:0!important}
-body:not(.flip) main{max-width:none!important;max-height:none!important;height:100%;margin:0!important;padding:var(--pt,0px) 14px var(--gap)!important;justify-content:flex-start!important}
-body:not(.flip) .ttl1{flex:none!important;height:var(--banner);max-height:none!important;margin:0!important;display:flex;align-items:center;justify-content:center}
-body:not(.flip) .ctl{margin:auto 0 8px}
-body:not(.flip) .side{max-height:none!important;flex-grow:8}
-body:not(.flip) .bar{flex:none!important;height:var(--barh);max-height:none!important;margin-top:auto;padding:0!important;align-items:end!important;align-content:end!important}
+#app{position:absolute!important;left:0!important;top:0!important;width:390px!important;height:var(--sh,100vh)!important;transform-origin:0 0!important;transform:var(--st,none)!important;padding:0!important;margin:0!important;background:transparent!important}
+main{max-width:none!important;max-height:none!important;width:100%!important;height:100%!important;margin:0!important}
+body:not(.flip) main{padding:var(--pt,0px) 14px var(--gap)!important;justify-content:flex-start!important}
+body:not(.flip) main>.ttl1{flex:none!important;height:var(--banner)!important;max-height:none!important;margin:0!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
+body:not(.flip) main>.ctl{margin-top:auto!important}
+body:not(.flip) .bar{position:relative!important;inset:auto!important;flex:none!important;height:var(--barh)!important;max-height:none!important;margin:auto 0 0!important;padding:0!important;width:100%!important;max-width:none!important;
+  display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important;align-content:end!important}
 body:not(.flip) .bar button{padding:22px 0 0!important}
-#bar .mnu{grid-column:2;justify-self:center;color:var(--yel);text-shadow:0 0 6px var(--yel)}
-/* flipped 2-player: same stage, own layout */
-body.flip main{width:100%!important;max-width:none!important;padding:calc(var(--pt,0px) + 10px) 14px var(--gap)!important}
-body.flip .side{max-height:none!important;flex-grow:1!important}
-body.flip main{padding-bottom:calc(40px + var(--gap))!important}
-body.flip .bar{padding-bottom:0!important;bottom:var(--gap)!important}
-/* guides (tap the title to show/hide) */
+.bar #bRules{grid-column:1;justify-self:start}.bar .mnu{grid-column:2;justify-self:center;color:var(--yel)!important;text-shadow:0 0 6px var(--yel)!important}.bar #bSet{grid-column:3;justify-self:end}
+/* flipped 2-player: same stage and bar position, its own layout */
+body.flip main{padding:calc(var(--pt,0px) + 10px) 14px calc(40px + var(--gap))!important}
+body.flip .bar{display:grid!important;grid-template-columns:1fr auto 1fr!important;padding:0 14px!important;bottom:var(--gap)!important;max-width:none!important}
+body:not(.flip) .side{max-height:none!important;flex-grow:8}body:not(.flip) .ctl{margin-bottom:8px!important}body.flip .side{max-height:none!important;flex-grow:1!important}
+/* guides: tap the title to show/hide */
 .gd{position:absolute;left:2px;right:2px;border:2px dashed;pointer-events:none;z-index:30;display:none}
 .gd span{position:absolute;right:4px;top:2px;font:400 16px/1 var(--vt)}
-html.guides .gd{display:block}
-#gB{border-color:var(--mag)}#gB span{color:var(--mag)}
-#gG{border-color:var(--cy)}#gG span{color:var(--cy)}
-#gM{border-color:var(--yel)}#gM span{color:var(--yel)}
+html.guides body:not(.flip) .gd{display:block}
+#gB{border-color:var(--mag)}#gB span{color:var(--mag)}#gG{border-color:var(--cy)}#gG span{color:var(--cy)}#gM{border-color:var(--yel)}#gM span{color:var(--yel)}
 #probe{position:fixed;visibility:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0}
 </style>
 </head>
@@ -401,24 +400,23 @@ renderDiff();start();
 <div id="probe"></div>
 <script>
 (function(){
-var de=document.documentElement,app=document.getElementById('app'),main=app.querySelector('main');
+var de=document.documentElement,app=document.getElementById('app'),main=app.querySelector('main'),tt=main.querySelector('.ttl1'),bar=document.getElementById('bar');
+var BLOCK=64+667+36+30; /* banner + game + bar + gap, scaled as one */
 ['gB','gG','gM'].forEach(function(id){var d=document.createElement('div');d.className='gd';d.id=id;d.innerHTML='<span></span>';app.appendChild(d)});
 function stage(){
-  var cs=getComputedStyle(document.getElementById('probe')),t=parseFloat(cs.paddingTop)||0;
-  var W=innerWidth,H=innerHeight,k=Math.min(W/390,H/(680+t+10)),sh=H/k,x=(W-390*k)/2;
+  var t=parseFloat(getComputedStyle(document.getElementById('probe')).paddingTop)||0;
+  if(window.__SAFE)t=__SAFE.t;
+  var W=innerWidth,H=innerHeight,k=Math.min(W/390,(H-t)/BLOCK),sh=t/k+BLOCK,x=(W-390*k)/2,y=(H-sh*k)/2;
   de.style.setProperty('--sh',sh+'px');de.style.setProperty('--pt',(t/k)+'px');
-  de.style.setProperty('--st','translate('+x+'px,0) scale('+k+')');
+  de.style.setProperty('--st','translate('+x+'px,'+y+'px) scale('+k+')');
+  try{if(typeof fit==='function')fit()}catch(e){}
   setTimeout(guides,0);
 }
 function box(el){var y=0,e=el;while(e&&e!==app){y+=e.offsetTop;e=e.offsetParent}return [y,el.offsetHeight]}
 function put(id,top,h,lab){var g=document.getElementById(id);g.style.top=top+'px';g.style.height=h+'px';g.firstChild.textContent=lab}
-function guides(){
-  var tt=document.querySelector('.ttl1'),bar=document.getElementById('bar');
-  if(document.body.classList.contains('flip')){de.classList.remove('guides');return}
-  var a=box(tt),b=box(bar),gt=a[0]+a[1],gh=b[0]-gt;
-  put('gB',a[0],a[1],'banner '+a[1]);put('gG',gt,gh,'game '+Math.round(gh));put('gM',b[0],b[1],'bar '+b[1]+' · gap '+Math.round(app.clientHeight-b[0]-b[1]));
-}
-document.querySelector('.ttl1').addEventListener('click',function(){de.classList.toggle('guides');guides()});
+function guides(){var a=box(tt),b=box(bar),gt=a[0]+a[1],gh=b[0]-gt;
+  put('gB',a[0],a[1],'banner '+a[1]);put('gG',gt,gh,'game '+Math.round(gh));put('gM',b[0],b[1],'bar '+b[1]+' · gap '+Math.round(app.clientHeight-b[0]-b[1]))}
+tt.addEventListener('click',function(){de.classList.toggle('guides');guides()});
 document.addEventListener('touchmove',function(e){if(!e.target.closest('.panel'))e.preventDefault()},{passive:false});
 stage();addEventListener('resize',stage);addEventListener('orientationchange',function(){setTimeout(stage,300)});
 try{new ResizeObserver(guides).observe(main)}catch(e){}
