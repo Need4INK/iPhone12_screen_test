@@ -17,9 +17,7 @@ body:not(.flip) main>TITLE{flex:none!important;height:var(--banner)!important;ma
 body:not(.flip) .bar{position:relative!important;inset:auto!important;flex:none!important;height:var(--barh)!important;max-height:none!important;margin:auto 0 0!important;padding:0!important;width:100%!important;max-width:none!important;
   display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important;align-content:end!important}
 body:not(.flip) .bar button{padding:22px 0 0!important}
-.bar #bRules{grid-column:1;justify-self:start}.bar .mnu{grid-column:2;justify-self:center;color:var(--yel)!important;text-shadow:0 0 6px var(--yel)!important}.bar #bSet{grid-column:3;justify-self:end}
-/* open Rules/Settings: magenta, so it never matches the yellow Menu */
-.bar button[aria-expanded="true"]{color:var(--mag)!important;text-shadow:0 0 8px var(--mag)!important}
+.bar #bRules{grid-column:1;justify-self:start}.bar .mnu{grid-column:2;justify-self:center;color:#39ff7a!important;text-shadow:0 0 6px #39ff7a!important}.bar #bSet{grid-column:3;justify-self:end}
 /* flipped 2-player template: banner 64 / game 603 / banner 64 / bar 36 / gap 30 */
 body.flip main{padding:var(--pt,0px) 14px calc(var(--barh) + var(--gap))!important;gap:8px!important;justify-content:flex-start!important}
 body.flip main>TITLE,body.flip main>TITLE2{flex:none!important;height:var(--banner)!important;max-height:none!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
@@ -66,7 +64,7 @@ de.classList.add('guides');
 })();
 </script>
 '''
-MENU = '<button type="button" class="mnu" onclick="location.href=\'index.html\'">Menu</button>'
+MENU = '<button type="button" class="mnu" onclick="location.href=\'index.html\'">Exit</button>'
 META = '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="apple-mobile-web-app-title" content="Screen Test">\n'
 
 def make(src, out, title, first, menu_after, extra='', reps=(), title2='.ttl2-none'):
