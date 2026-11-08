@@ -126,8 +126,8 @@ body.flip .bar{display:grid!important;grid-template-columns:1fr auto 1fr!importa
 /* guides: tap the title to show/hide */
 .gd{position:absolute;left:2px;right:2px;border:2px dashed;pointer-events:none;z-index:30;display:none}
 .gd span{position:absolute;right:4px;top:2px;font:400 16px/1 var(--vt)}
-html.guides body:not(.flip) .gd{display:block}
-#gB{border-color:var(--mag)}#gB span{color:var(--mag)}#gG{border-color:var(--cy)}#gG span{color:var(--cy)}#gM{border-color:var(--yel)}#gM span{color:var(--yel)}
+html.guides .gd{display:block}
+#gB{border-color:var(--mag)}#gB span{color:var(--mag)}#gG{border-color:var(--cy)}#gG span{color:var(--cy)}#gM{border-color:var(--yel)}#gM span{color:var(--yel)}#gX{border-color:var(--org,#ff9e2c);border-style:dotted}#gX span{color:var(--org,#ff9e2c);top:auto;bottom:2px}
 #probe{position:fixed;visibility:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0}
 </style>
 </head>
@@ -313,7 +313,7 @@ newPuzzle();
 (function(){
 var de=document.documentElement,app=document.getElementById('app'),main=app.querySelector('main'),tt=main.querySelector('h1'),bar=document.getElementById('bar');
 var BLOCK=64+667+36+30; /* banner + game + bar + gap, scaled as one */
-['gB','gG','gM'].forEach(function(id){var d=document.createElement('div');d.className='gd';d.id=id;d.innerHTML='<span></span>';app.appendChild(d)});
+['gB','gG','gM','gX'].forEach(function(id){var d=document.createElement('div');d.className='gd';d.id=id;d.innerHTML='<span></span>';app.appendChild(d)});
 function stage(){
   var t=parseFloat(getComputedStyle(document.getElementById('probe')).paddingTop)||0;
   if(window.__SAFE)t=__SAFE.t;
@@ -323,11 +323,11 @@ function stage(){
   try{if(typeof fit==='function')fit()}catch(e){}
   setTimeout(guides,0);
 }
-function box(el){var y=0,e=el;while(e&&e!==app){y+=e.offsetTop;e=e.offsetParent}return [y,el.offsetHeight]}
 function put(id,top,h,lab){var g=document.getElementById(id);g.style.top=top+'px';g.style.height=h+'px';g.firstChild.textContent=lab}
-function guides(){var a=box(tt),b=box(bar),gt=a[0]+a[1],gh=b[0]-gt;
-  put('gB',a[0],a[1],'banner '+a[1]);put('gG',gt,gh,'game '+Math.round(gh));put('gM',b[0],b[1],'bar '+b[1]+' · gap '+Math.round(app.clientHeight-b[0]-b[1]))}
-tt.addEventListener('click',function(){de.classList.toggle('guides');guides()});
+function guides(){ /* fixed template zones, independent of the game's elements */
+  var pt=parseFloat(getComputedStyle(de).getPropertyValue('--pt'))||0;
+  put('gB',pt,64,'banner 64');put('gG',pt+64,667,'game 667');put('gM',pt+731,36,'');put('gX',pt+767,30,'bar 36 · gap 30')}
+main.querySelectorAll('h1,.ttl').forEach(function(h){h.addEventListener('click',function(){de.classList.toggle('guides');guides()})});
 document.addEventListener('touchmove',function(e){if(!e.target.closest('.panel'))e.preventDefault()},{passive:false});
 stage();addEventListener('resize',stage);addEventListener('orientationchange',function(){setTimeout(stage,300)});
 try{new ResizeObserver(guides).observe(main)}catch(e){}
