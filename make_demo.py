@@ -18,15 +18,19 @@ body:not(.flip) .bar{position:relative!important;inset:auto!important;flex:none!
   display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important;align-content:end!important}
 body:not(.flip) .bar button{padding:22px 0 0!important}
 .bar #bRules{grid-column:1;justify-self:start}.bar .mnu{grid-column:2;justify-self:center;color:var(--yel)!important;text-shadow:0 0 6px var(--yel)!important}.bar #bSet{grid-column:3;justify-self:end}
-/* flipped 2-player: same stage and bar position, its own layout */
-body.flip main{padding:calc(var(--pt,0px) + 10px) 14px calc(40px + var(--gap))!important}
-body.flip .bar{display:grid!important;grid-template-columns:1fr auto 1fr!important;padding:0 14px!important;bottom:var(--gap)!important;max-width:none!important}
+/* flipped 2-player template: banner 64 / game 603 / banner 64 / bar 36 / gap 30 */
+body.flip main{padding:var(--pt,0px) 14px calc(var(--barh) + var(--gap))!important;gap:8px!important;justify-content:flex-start!important}
+body.flip main>TITLE,body.flip main>TITLE2{flex:none!important;height:var(--banner)!important;max-height:none!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important}
+body.flip main>TITLE{margin:0 0 auto!important}body.flip main>TITLE2{margin:auto 0 0!important}
+body.flip .bar{position:absolute!important;left:0!important;right:0!important;top:auto!important;bottom:var(--gap)!important;height:var(--barh)!important;margin:0!important;padding:0 14px!important;max-width:none!important;
+  display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:end!important}
+body.flip .bar button{padding:22px 0 0!important}
 EXTRA
 /* guides: tap the title to show/hide */
 .gd{position:absolute;left:2px;right:2px;border:2px dashed;pointer-events:none;z-index:30;display:none}
 .gd span{position:absolute;right:4px;top:2px;font:400 16px/1 var(--vt)}
 html.guides .gd{display:block}
-#gB{border-color:var(--mag)}#gB span{color:var(--mag)}#gG{border-color:var(--cy)}#gG span{color:var(--cy)}#gM{border-color:var(--yel)}#gM span{color:var(--yel)}#gX{border-color:var(--org,#ff9e2c);border-style:dotted}#gX span{color:var(--org,#ff9e2c);top:auto;bottom:2px}
+#gB{border-color:var(--mag)}#gB span{color:var(--mag)}#gG{border-color:var(--cy)}#gG span{color:var(--cy)}#gB2{border-color:var(--mag)}#gB2 span{color:var(--mag)}#gM{border-color:var(--yel)}#gM span{color:var(--yel)}#gX{border-color:var(--org,#ff9e2c);border-style:dotted}#gX span{color:var(--org,#ff9e2c);top:auto;bottom:2px}
 #probe{position:fixed;visibility:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0}
 </style>
 '''
@@ -36,7 +40,7 @@ JS = r'''
 (function(){
 var de=document.documentElement,app=document.getElementById('app'),main=app.querySelector('main'),tt=main.querySelector('TITLE'),bar=document.getElementById('bar');
 var BLOCK=64+667+36+30; /* banner + game + bar + gap, scaled as one */
-['gB','gG','gM','gX'].forEach(function(id){var d=document.createElement('div');d.className='gd';d.id=id;d.innerHTML='<span></span>';app.appendChild(d)});
+['gB','gG','gB2','gM','gX'].forEach(function(id){var d=document.createElement('div');d.className='gd';d.id=id;d.innerHTML='<span></span>';app.appendChild(d)});
 function stage(){
   var t=parseFloat(getComputedStyle(document.getElementById('probe')).paddingTop)||0;
   if(window.__SAFE)t=__SAFE.t;
@@ -49,11 +53,13 @@ function stage(){
 function put(id,top,h,lab){var g=document.getElementById(id);g.style.top=top+'px';g.style.height=h+'px';g.firstChild.textContent=lab}
 function guides(){ /* fixed template zones, independent of the game's elements */
   var pt=parseFloat(getComputedStyle(de).getPropertyValue('--pt'))||0;
-  put('gB',pt,64,'banner 64');put('gG',pt+64,667,'game 667');put('gM',pt+731,36,'');put('gX',pt+767,30,'bar 36 · gap 30')}
+  var fl=document.body.classList.contains('flip'),g2=document.getElementById('gB2');g2.style.visibility=fl?'visible':'hidden';
+  put('gB',pt,64,'banner 64');
+  if(fl){put('gG',pt+64,603,'game 603');put('gB2',pt+667,64,'banner 64')}else put('gG',pt+64,667,'game 667');put('gM',pt+731,36,'');put('gX',pt+767,30,'bar 36 · gap 30')}
 main.querySelectorAll('h1,.ttl').forEach(function(h){h.addEventListener('click',function(){de.classList.toggle('guides');guides()})});
 document.addEventListener('touchmove',function(e){if(!e.target.closest('.panel'))e.preventDefault()},{passive:false});
 stage();addEventListener('resize',stage);addEventListener('orientationchange',function(){setTimeout(stage,300)});
-try{new ResizeObserver(guides).observe(main)}catch(e){}
+try{new ResizeObserver(guides).observe(main);new MutationObserver(guides).observe(document.body,{attributes:true,attributeFilter:['class']})}catch(e){}
 de.classList.add('guides');
 })();
 </script>
@@ -61,7 +67,7 @@ de.classList.add('guides');
 MENU = '<button type="button" class="mnu" onclick="location.href=\'index.html\'">Menu</button>'
 META = '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="apple-mobile-web-app-title" content="Screen Test">\n'
 
-def make(src, out, title, first, menu_after, extra='', reps=()):
+def make(src, out, title, first, menu_after, extra='', reps=(), title2='.ttl2-none'):
     s = open(os.path.join(SRC, src), encoding='utf-8').read()
     def rep(a, b):
         nonlocal s
@@ -71,7 +77,7 @@ def make(src, out, title, first, menu_after, extra='', reps=()):
     # panel opens right above the bar, measured in stage coordinates
     rep("if(document.documentElement.classList.contains('rot')){", "if(1){")
     for a, b in reps: rep(a, b)
-    rep('</style>\n</head>', '</style>' + TPL.replace('TITLE', title).replace('FIRST', first).replace('EXTRA', extra) + '</head>')
+    rep('</style>\n</head>', '</style>' + TPL.replace('TITLE2', title2).replace('TITLE', title).replace('FIRST', first).replace('EXTRA', extra) + '</head>')
     rep('</body>', JS.replace('TITLE', title) + '</body>')
     open(os.path.join(OUT, out), 'w', encoding='utf-8').write(s)
     print('built', out, len(s))
@@ -79,11 +85,13 @@ def make(src, out, title, first, menu_after, extra='', reps=()):
 make('Knucklebones.html', 'knucklebones.html', '.ttl1', '.ctl',
      'aria-controls="panel">Rules</button>',
      extra='body:not(.flip) .side{max-height:none!important;flex-grow:8}body:not(.flip) .ctl{margin:8px 0!important}body:not(.flip) .ctl[hidden]+.side.opp{margin-top:8px}body:not(.flip) .side.you{margin-bottom:8px}body.flip .side{max-height:none!important;flex-grow:1!important}',
+     title2='.ttl2',
      reps=[('function fit(){var de', 'function fit(){return;var de')])
 
 make('Othello.html', 'othello.html', '#t1', '.ctl',
      'id="bRules" aria-expanded="false">Rules</button>',
-     extra='body:not(.flip) .mid:not(#msg2){margin-bottom:0!important}html:not(.rotated) h1{font-size:20px!important;margin:0!important}')
+     extra='body:not(.flip) .mid:not(#msg2){margin-bottom:0!important}html:not(.rotated) h1{font-size:20px!important;margin:0!important}.flip.tight #t1,.flip.tight #t2{display:flex!important}',
+     title2='#t2')
 
 make('Water_Sort.html', 'water_sort.html', 'h1', '#game',
      'id="bRules" aria-expanded="false">Rules</button>',
