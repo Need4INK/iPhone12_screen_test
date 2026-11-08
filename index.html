@@ -69,6 +69,7 @@
   #info td:last-child{text-align:right}
   .ok{color:var(--grn)} .bad{color:var(--red)} .dim{color:#9a8fb0}
   .sw{display:inline-block;width:10px;height:10px;margin-right:6px;border:2px dashed}
+  #kb{display:block;margin:10px auto 0;width:max-content;padding:8px 12px;font:10px 'Press Start 2P',monospace;color:#07030f;background:var(--grn);border-radius:6px;text-decoration:none;box-shadow:0 0 10px var(--grn)}
   #hint{margin-top:6px;font-size:16px;color:#9a8fb0;text-align:center}
   body.hide #info{visibility:hidden}
   #probe{position:absolute;visibility:hidden;padding:var(--sat) 0 var(--sab) 0}
@@ -82,6 +83,7 @@
       <div id="info">
         <h2>SCREEN TEST · AREAS</h2>
         <table id="tbl"></table>
+        <a id="kb" href="knucklebones.html">▶ KNUCKLEBONES DEMO</a>
         <div id="hint">Tap to hide/show this panel</div>
       </div>
     </div>
@@ -117,7 +119,7 @@ function update(){
 }
 addEventListener('resize',update);
 addEventListener('orientationchange',()=>setTimeout(update,300));
-document.addEventListener('click',e=>{if(!e.target.closest('button'))document.body.classList.toggle('hide')});
+document.addEventListener('click',e=>{if(!e.target.closest('button,a'))document.body.classList.toggle('hide')});
 document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 document.fonts&&document.fonts.ready.then(update);
 update();setTimeout(update,500);
