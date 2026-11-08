@@ -9,176 +9,117 @@
 <meta name="apple-mobile-web-app-title" content="Screen Test">
 <meta name="theme-color" content="#07030f">
 <link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <title>Screen Test</title>
 <style>
   :root{
     --bg:#07030f; --mag:#ff2bd6; --cyan:#19f3ff; --yel:#ffe94d;
     --grn:#39ff7a; --org:#ff9e2c; --red:#e8566a;
     --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
-    --sal:env(safe-area-inset-left); --sar:env(safe-area-inset-right);
+    /* layout knobs */
+    --banner:64px;      /* banner height below the status bar */
+    --barh:56px;        /* bottom menu bar height */
+    --barGap:10px;      /* space kept under the bar (home-bar area) */
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:var(--bg);color:#fff;overflow:hidden;
-    font:14px/1.35 ui-monospace,Menlo,monospace;-webkit-user-select:none;user-select:none;
+  /* full-screen method: page height = 100vh, everything in page flow */
+  html,body{height:100vh;background:var(--bg);color:#fff;overflow:hidden;
+    font:20px/1.2 'VT323',ui-monospace,monospace;-webkit-user-select:none;user-select:none;
     -webkit-tap-highlight-color:transparent}
-  .fix{position:absolute;pointer-events:none}
-  /* full-screen canvas: works around iOS standalone bug where the
-     viewport is short by safe-area-inset-top */
-  #screen{position:fixed;top:0;left:0;width:100%;
-    height:calc(100% + env(safe-area-inset-top));height:var(--H,calc(100% + env(safe-area-inset-top)));
-    overflow:hidden}
+  #screen{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden}
+  .ov{position:absolute;pointer-events:none;z-index:5}
 
-  /* screen edge with iPhone 12 corner radius (47.33pt) */
-  #edge{inset:0;border:2px solid var(--cyan);border-radius:47.33px;
-    box-shadow:inset 0 0 12px var(--cyan)}
-  /* plain rectangle of the viewport, to compare with rounded corners */
-  #rect{inset:0;border:1px dashed rgba(25,243,255,.45)}
+  /* ---------- three areas ---------- */
+  #layout{position:absolute;inset:0;display:flex;flex-direction:column;
+    padding-top:var(--sat);padding-bottom:var(--barGap)}
+  #banner{flex:none;height:var(--banner);display:flex;align-items:center;justify-content:center;
+    border:2px dashed var(--mag);background:rgba(255,43,214,.08);position:relative}
+  #banner h1{font:16px 'Press Start 2P',monospace;color:#fff;
+    text-shadow:0 0 6px var(--mag),0 0 14px var(--mag)}
+  #game{flex:1;min-height:0;border:2px dashed var(--cyan);background:rgba(25,243,255,.05);
+    position:relative;display:flex;align-items:center;justify-content:center}
+  #bar{flex:none;height:var(--barh);display:grid;grid-template-columns:1fr 1fr 1fr;
+    align-items:center;justify-items:center;border:2px dashed var(--yel);
+    background:rgba(255,233,77,.07);position:relative}
+  #bar button{font:10px 'Press Start 2P',monospace;padding:6px 10px;width:96px;height:36px;
+    background:transparent;border:2px solid;border-radius:6px;pointer-events:auto}
+  #bRules{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px rgba(25,243,255,.5)}
+  #bMenu{color:var(--bg);background:var(--yel)!important;border-color:var(--yel);box-shadow:0 0 10px var(--yel)}
+  #bSet{color:var(--mag);border-color:var(--mag);box-shadow:0 0 8px rgba(255,43,214,.5)}
+  .tag{position:absolute;right:6px;top:3px;font-size:16px;line-height:1;pointer-events:none}
+  #banner .tag{color:var(--mag)} #game .tag{color:var(--cyan)} #bar .tag{color:var(--yel);top:-15px}
 
-  /* safe-area bands */
+  /* ---------- screen overlays ---------- */
+  #edge{inset:0;border:2px solid var(--cyan);border-radius:47.33px;opacity:.7}
   #sTop{top:0;left:0;right:0;height:var(--sat);
-    background:repeating-linear-gradient(45deg,rgba(255,233,77,.28) 0 6px,transparent 6px 12px);
-    border-bottom:1px solid var(--yel)}
+    background:repeating-linear-gradient(45deg,rgba(255,233,77,.22) 0 6px,transparent 6px 12px)}
   #sBot{bottom:0;left:0;right:0;height:var(--sab);
-    background:repeating-linear-gradient(45deg,rgba(255,158,44,.3) 0 6px,transparent 6px 12px);
-    border-top:1px solid var(--org)}
-  #sL{top:0;bottom:0;left:0;width:var(--sal);background:rgba(232,86,106,.3)}
-  #sR{top:0;bottom:0;right:0;width:var(--sar);background:rgba(232,86,106,.3)}
-
-  /* approximate iPhone 12 notch: ~210 x 30 pt */
+    background:repeating-linear-gradient(45deg,rgba(255,158,44,.22) 0 6px,transparent 6px 12px)}
   #notch{top:0;left:50%;width:210px;height:30px;transform:translateX(-50%);
-    background:rgba(255,43,214,.35);border:2px solid var(--mag);border-top:none;
-    border-radius:0 0 22px 22px;box-shadow:0 0 10px var(--mag)}
-  /* home indicator: ~134 x 5 pt, 8pt from bottom */
+    border:2px solid var(--mag);border-top:none;border-radius:0 0 22px 22px;opacity:.7}
   #home{bottom:8px;left:50%;width:134px;height:5px;transform:translateX(-50%);
-    background:var(--mag);border-radius:3px;box-shadow:0 0 8px var(--mag)}
+    background:var(--mag);border-radius:3px;opacity:.8}
 
-  /* rulers (tick every 10, longer every 50) */
-  .rx{left:0;right:0;height:14px;
-    background:
-      repeating-linear-gradient(90deg,var(--grn) 0 1px,transparent 1px 50px) 0 0/100% 14px no-repeat,
-      repeating-linear-gradient(90deg,rgba(57,255,122,.6) 0 1px,transparent 1px 10px) 0 0/100% 7px no-repeat}
-  .ry{top:0;bottom:0;width:14px;
-    background:
-      repeating-linear-gradient(180deg,var(--grn) 0 1px,transparent 1px 50px) 0 0/14px 100% no-repeat,
-      repeating-linear-gradient(180deg,rgba(57,255,122,.6) 0 1px,transparent 1px 10px) 0 0/7px 100% no-repeat}
-  #rB{bottom:0;transform:scaleY(-1)} #rT{top:0}
-  #rL{left:0} #rR{right:0;transform:scaleX(-1)}
-  .lbl{position:absolute;font-size:9px;color:var(--grn);pointer-events:none}
-
-  /* centre markers */
-  #cx{top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.12)}
-  #cy{left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.12)}
-
-  /* info panel inside safe area */
-  #info{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:min(300px,82vw);padding:14px 16px;background:rgba(7,3,15,.88);
-    border:2px solid var(--mag);border-radius:10px;box-shadow:0 0 14px var(--mag)}
-  #info h1{font-size:15px;color:var(--yel);margin-bottom:8px;letter-spacing:1px}
+  /* info panel inside the game area */
+  #info{width:300px;padding:10px 14px;background:rgba(7,3,15,.9);
+    border:2px solid var(--cyan);border-radius:10px;font-size:19px}
+  #info h2{font:11px 'Press Start 2P',monospace;color:var(--yel);margin-bottom:8px}
   #info table{width:100%;border-collapse:collapse}
-  #info td{padding:2px 0;vertical-align:top}
   #info td:last-child{text-align:right}
   .ok{color:var(--grn)} .bad{color:var(--red)} .dim{color:#9a8fb0}
-  #legend{margin-top:10px;font-size:12px}
-  #legend span{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
-  #hint{margin-top:8px;font-size:11px;color:#9a8fb0;text-align:center}
-  body.hide #info{display:none}
-  #probe{position:fixed;visibility:hidden;padding:var(--sat) var(--sar) var(--sab) var(--sal)}
-
-  /* ---- fill methods (switch with the MODE button) ---- */
-  html.m1,html.m1 body{height:var(--H);overflow:visible}
-  html.m1 #screen{position:absolute;top:0;left:0;height:var(--H)}
-  html.m2,html.m2 body{height:100vh;overflow:visible}
-  html.m2 #screen{position:absolute;top:0;left:0;height:100vh}
-  html.m3 #screen{height:auto;bottom:calc(-1 * env(safe-area-inset-top))}
-  #mode{display:block;margin:10px auto 0;padding:6px 10px;font:inherit;font-size:13px;
-    color:var(--bg);background:var(--yel);border:0;border-radius:6px;pointer-events:auto}
-  .vh{position:absolute;visibility:hidden;width:1px}
+  .sw{display:inline-block;width:10px;height:10px;margin-right:6px;border:2px dashed}
+  #hint{margin-top:6px;font-size:16px;color:#9a8fb0;text-align:center}
+  body.hide #info{visibility:hidden}
+  #probe{position:absolute;visibility:hidden;padding:var(--sat) 0 var(--sab) 0}
 </style>
 </head>
 <body>
 <div id="screen">
-<div id="rect" class="fix"></div>
-<div id="sTop" class="fix"></div><div id="sBot" class="fix"></div>
-<div id="sL" class="fix"></div><div id="sR" class="fix"></div>
-<div id="cx" class="fix"></div><div id="cy" class="fix"></div>
-<div id="rT" class="fix rx"></div><div id="rB" class="fix rx"></div>
-<div id="rL" class="fix ry"></div><div id="rR" class="fix ry"></div>
-<div id="notch" class="fix"></div>
-<div id="home" class="fix"></div>
-<div id="edge" class="fix"></div>
-<div id="labels"></div>
-<div id="probe"></div><div class="vh" id="v1" style="height:100vh"></div><div class="vh" id="v2" style="height:100lvh"></div><div class="vh" id="v3" style="height:100dvh"></div>
-
-<div id="info">
-  <h1>SCREEN TEST · iPhone 12</h1>
-  <table id="tbl"></table>
-  <div id="legend">
-    <div><span style="background:var(--cyan)"></span>screen edge (47pt corners)</div>
-    <div><span style="background:var(--mag)"></span>notch &amp; home bar (approx.)</div>
-    <div><span style="background:var(--yel)"></span>top safe area</div>
-    <div><span style="background:var(--org)"></span>bottom safe area</div>
-    <div><span style="background:var(--grn)"></span>ruler: 10pt ticks, 50pt marks</div>
+  <div id="layout">
+    <div id="banner"><span class="tag" id="tBanner"></span><h1>NEON ARCADE</h1></div>
+    <div id="game"><span class="tag" id="tGame"></span>
+      <div id="info">
+        <h2>SCREEN TEST · AREAS</h2>
+        <table id="tbl"></table>
+        <div id="hint">Tap to hide/show this panel</div>
+      </div>
+    </div>
+    <div id="bar"><span class="tag" id="tBar"></span>
+      <button id="bRules">RULES</button><button id="bMenu">MENU</button><button id="bSet">SETTINGS</button>
+    </div>
   </div>
-  <button id="mode"></button>
-  <div id="hint">Tap anywhere to hide/show this panel</div>
+  <div id="sTop" class="ov"></div><div id="sBot" class="ov"></div>
+  <div id="notch" class="ov"></div><div id="home" class="ov"></div>
+  <div id="edge" class="ov"></div>
+  <div id="probe"></div>
 </div>
-</div>
-
 <script>
-const MODES=['0 · fixed + JS height','1 · page height = screen','2 · page height = 100vh','3 · fixed, bottom −47'];
-let mode=0;try{mode=+localStorage.getItem('fillMode')||0}catch(e){}
-document.documentElement.classList.add('m'+mode);
-const EXP={w:390,h:844,top:47,bottom:34,dpr:3};
-const probe=document.getElementById('probe');
-function px(v){return Math.round(parseFloat(v)||0)}
-function row(name,val,good){
-  const cls=good===undefined?'':(good?'ok':'bad');
-  return `<tr><td class="dim">${name}</td><td class="${cls}">${val}</td></tr>`;
-}
-const scr=document.getElementById('screen');
-function fitScreen(){
-  const sa=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
-  const portrait=innerHeight>=innerWidth;
-  const full=portrait?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
-  // standalone: use the real screen height; otherwise the visible viewport
-  document.documentElement.style.setProperty('--H',(sa?Math.max(full,innerHeight):innerHeight)+'px');
-}
-function labels(){
-  const w=scr.clientWidth,h=scr.clientHeight;let s='';
-  for(let x=50;x<w;x+=50)s+=`<div class="lbl" style="left:${x+2}px;top:15px">${x}</div>`;
-  for(let y=100;y<h;y+=100)s+=`<div class="lbl" style="left:16px;top:${y-5}px">${y}</div>`;
-  document.getElementById('labels').innerHTML=s;
-}
+const $=id=>document.getElementById(id);
+const sa=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+function sz(el){const r=el.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height),Math.round(r.top),Math.round(r.bottom)]}
+function row(n,v,g){return `<tr><td class="dim">${n}</td><td class="${g===undefined?'':(g?'ok':'bad')}">${v}</td></tr>`}
 function update(){
-  fitScreen();
-  const cs=getComputedStyle(probe);
-  const t=px(cs.paddingTop),b=px(cs.paddingBottom),l=px(cs.paddingLeft),r=px(cs.paddingRight);
-  const w=innerWidth,h=innerHeight;
-  const sa=window.navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
-  const portrait=h>=w;
-  document.getElementById('tbl').innerHTML=
-    row('Home-screen app',sa?'yes':'no (Safari)',sa)+
-    row('Orientation',portrait?'portrait':'landscape',portrait)+
-    row('Viewport (iOS)',`${w} × ${h}`)+
-    row('Canvas used',`${scr.clientWidth} × ${scr.clientHeight}`,scr.clientWidth===EXP.w&&scr.clientHeight===EXP.h)+
-    row('Screen size',`${screen.width} × ${screen.height}`)+
-    row('Pixel ratio',`${devicePixelRatio}×`)+
-    row('Safe top',`${t}pt`,t===EXP.top)+
-    row('Safe bottom',`${b}pt`,b===EXP.bottom)+
-    row('Safe left / right',`${l} / ${r}pt`)+
-    row('Usable area',`${scr.clientWidth-l-r} × ${scr.clientHeight-t-b}`)+
-    row('100vh / lvh / dvh',['v1','v2','v3'].map(i=>document.getElementById(i).offsetHeight).join(' / '))+
-    row('Body scroll height',document.documentElement.scrollHeight)+
-    row('Expected',`${EXP.w}×${EXP.h}, ${EXP.top}/${EXP.bottom}`);
-  labels();
+  const cs=getComputedStyle($('probe'));
+  const t=Math.round(parseFloat(cs.paddingTop)),b=Math.round(parseFloat(cs.paddingBottom));
+  const s=sz($('screen')),bn=sz($('banner')),g=sz($('game')),br=sz($('bar'));
+  $('tBanner').textContent=`${bn[0]}×${bn[1]}`;
+  $('tGame').textContent=`${g[0]}×${g[1]}`;
+  $('tBar').textContent=`${br[0]}×${br[1]}`;
+  $('tbl').innerHTML=
+    row('Home-screen app',sa?'yes':'no',sa)+
+    row('Screen',`${s[0]} × ${s[1]}`,s[0]===390&&s[1]===844)+
+    row('Safe top / bottom',`${t} / ${b}`)+
+    row('<span class="sw" style="border-color:var(--mag)"></span>Banner',`${bn[1]} (y ${bn[2]}–${bn[3]})`)+
+    row('<span class="sw" style="border-color:var(--cyan)"></span>Game area',`${g[0]}×${g[1]} (y ${g[2]}–${g[3]})`)+
+    row('<span class="sw" style="border-color:var(--yel)"></span>Menu bar',`${br[1]} (y ${br[2]}–${br[3]})`)+
+    row('Gap under bar',`${s[1]-br[3]}`);
 }
 addEventListener('resize',update);
 addEventListener('orientationchange',()=>setTimeout(update,300));
-document.getElementById('mode').textContent='MODE '+MODES[mode]+'  ▸';
-document.getElementById('mode').addEventListener('click',e=>{e.stopPropagation();
-  try{localStorage.setItem('fillMode',(mode+1)%MODES.length)}catch(_){}location.reload()});
-document.addEventListener('click',()=>document.body.classList.toggle('hide'));
+document.addEventListener('click',e=>{if(!e.target.closest('button'))document.body.classList.toggle('hide')});
 document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+document.fonts&&document.fonts.ready.then(update);
 update();setTimeout(update,500);
 </script>
 </body>
